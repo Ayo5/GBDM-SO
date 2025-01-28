@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,7 +10,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #0D0D0D;
     --foreground: #ededed;
   }
 }
@@ -17,5 +18,5 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Kaisei Opti', Arial, Helvetica, sans-serif;
 }
