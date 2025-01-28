@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;700&display=swap');  /* à télécharger pour optimiser le site */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,6 +13,13 @@
     --background: #0D0D0D;
     --foreground: #ededed;
   }
+}
+
+.homepage-background {
+  background-image: url('/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 body {
