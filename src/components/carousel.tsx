@@ -52,13 +52,13 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images }) => {
                         return (
                             <div
                                 key={index}
-                                className={`absolute transition-all duration-500 ease-out
+                                className={`absolute transition-all duration-700 ease-in-out
                                     ${isCenter ? 'w-[800px] z-20' : 'w-[700px] z-10'}
                                     ${offset === -1 ? '-translate-x-[85%]' : ''}
                                     ${offset === 1 ? 'translate-x-[85%]' : ''}
                                 `}
                             >
-                                <div className={`relative h-[600px] rounded-xl overflow-hidden transition-transform duration-300
+                                <div className={`relative h-[600px] rounded-xl overflow-hidden transition-transform duration-700 ease-in-out
                                     ${isCenter ? 'scale-100 opacity-100' : 'scale-90 opacity-50'}`}
                                 >
                                     <Image
@@ -67,7 +67,7 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images }) => {
                                         fill
                                         quality={100}
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
-                                        className={`object-cover transition-transform duration-300
+                                        className={`object-cover transition-transform duration-700 ease-in-out
                                             ${isCenter ? 'hover:scale-105' : 'grayscale brightness-75'}`}
                                         priority={isCenter}
                                     />
@@ -90,20 +90,6 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images }) => {
                 >
                     <ChevronRight className="w-6 h-6" />
                 </button>
-
-                {/* Dots navigation */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-30">
-                    {images.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrentIndex(index)}
-                            className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
-                                currentIndex === index ? 'bg-white scale-110' : 'bg-white/50 hover:bg-white/70'
-                            }`}
-                            aria-label={`Go to slide ${index + 1}`}
-                        />
-                    ))}
-                </div>
             </div>
         </div>
     );
