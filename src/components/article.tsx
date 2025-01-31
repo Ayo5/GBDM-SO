@@ -1,58 +1,61 @@
-import React from 'react';
-import Image from "next/image";
+import React from "react";
 
 interface Section {
+    _id: number;
+    title: string;
+    content: string;
     image?: string;
     imageAlt?: string;
-    title?: string;
     width?: number;
     height?: number;
-    content: string;
 }
 
-const Article = ({ sections }: { sections: Section[] }) => {
+interface ArticleProps {
+    sections?: Section[];
+}
+
+const Article: React.FC<ArticleProps> = ({ sections = [] }) => {
     return (
-        <div className="flex flex-col items-center justify-center w-full px-4 py-8">
-            <div className="w-full max-w-5xl space-y-16 mt-16 mb-16">
-                {sections.map((section: Section, index: number) => (
+        <div className="max-w-7xl mx-auto px-4 py-8">
+            <h1 className="text-4xl font-bold text-center text-black mb-12">Article</h1>
+
+            <div className="space-y-16 mx-20">
+                {sections.map((section, index) => (
                     <div
-                        key={index}
+                        key={section._id}
                         className={`
-                            flex flex-col gap-8
-                            ${section.image
-                            ? 'md:flex-row md:items-center md:gap-12'
-                            : 'items-center justify-center'
-                        }
+                            flex flex-col gap-8 my-20
+                            ${section.image ? 'md:flex-row md:items-center md:gap-12' : 'items-center'}
                             ${index % 2 === 1 && section.image ? 'md:flex-row-reverse' : ''}
                         `}
                     >
                         {section.image && (
-                            <div className="w-full md:w-1/2 flex justify-center">
-                                <Image
+                            <div className="w-full md:w-1/2">
+                                <img
                                     src={section.image}
                                     alt={section.imageAlt || 'Article image'}
-                                    width={section.width || 600}
-                                    height={section.height || 400}
-                                    objectFit="cover"
-                                    quality={100}
-                                    className="rounded-lg shadow-2xl"
+                                    width={section.width}
+                                    height={section.height}
+                                    className="w-auto rounded-lg shadow-lg"
+                                    style={{
+                                        width: section.width ? `${section.width}px` : 'auto',
+                                        height: section.height ? `${section.height}px` : 'auto',
+                                        objectFit: 'cover'
+                                    }}
                                 />
                             </div>
                         )}
 
                         <div className={`
-                            ${section.image
-                            ? 'w-full md:w-1/2'
-                            : 'max-w-2xl text-center px-4'
-                        }
+                            ${section.image ? 'w-full md:w-1/2' : 'max-w-3xl'}
                             space-y-4
                         `}>
                             {section.title && (
-                                <h2 className="text-2xl font-semibold text-gray-700">
+                                <h2 className="text-2xl font-semibold text-black">
                                     {section.title}
                                 </h2>
                             )}
-                            <p className="text-gray-700 leading-relaxed">
+                            <p className="text-black leading-relaxed">
                                 {section.content}
                             </p>
                         </div>

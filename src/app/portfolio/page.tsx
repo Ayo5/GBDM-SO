@@ -18,10 +18,10 @@ export default function Portfolio() {
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
-            <main className="flex-1 w-full px-8 py-16">
+            <main className="flex-1 w-fullpy-16">
                 <div className="max-w-[2000px] mx-auto">
 
-                    <h1 className="text-2xl font-bold text-left my-16">
+                    <h1 className="text-2xl font-bold text-left my-16 ml-12">
                         Thème 1
                     </h1>
                     <div className="mx-auto px-8 py-10 mb-32">
@@ -30,7 +30,7 @@ export default function Portfolio() {
 
                     <ParallaxSection />
 
-                    <h1 className="text-2xl font-bold text-left my-16">
+                    <h1 className="text-2xl font-bold text-left my-16 ml-12">
                         Thème 2
                     </h1>
                     <div className="mx-auto px-8 py-10 rounded-2xl">

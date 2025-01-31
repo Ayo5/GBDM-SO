@@ -1,22 +1,24 @@
 "use client";
 
+import React from "react";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {InstagramIcon} from "lucide-react";
+
 
 const navigation = [
     { name: "Accueil", href: "/" },
     { name: "Portfolio", href: "/portfolio" },
     { name: "Formation", href: "/formation" },
-    { name: "Réservation", href: "/reservation" },
 ];
 
 export default function Navbar() {
     const pathname = usePathname();
 
     return (
-        <Disclosure as="nav" className=" shadow-md sticky top-0 z-10">
+        <Disclosure as="nav" className="top-0 z-10">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="relative flex h-16 items-center justify-between">
 
@@ -47,6 +49,9 @@ export default function Navbar() {
                                         </span>
                                     </Link>
                                 ))}
+                                <Link href="https://www.instagram.com/gbdm.so/" >
+                                    <InstagramIcon className="mt-1 w-6 h-6 text-white/50 hover:text-white transition duration-300" />
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -54,8 +59,8 @@ export default function Navbar() {
             </div>
 
             {/* Menu Mobile */}
-            <DisclosurePanel className="sm:hidden text-center bg-[#0D0D0D]">
-                <div className="space-y-1 px-4 pt-2 pb-3">
+            <DisclosurePanel className="sm:hidden text-center">
+                <div className="flex flex-col items-center space-y-1 px-4 pt-2 pb-3">
                     {navigation.map((item) => (
                         <Link key={item.name} href={item.href} passHref>
                             <DisclosureButton
@@ -67,6 +72,9 @@ export default function Navbar() {
                             </DisclosureButton>
                         </Link>
                     ))}
+                    <Link href="https://www.instagram.com/gbdm.so/" >
+                        <InstagramIcon className="w-6 h-6 text-white/50 hover:text-white transition duration-300" />
+                    </Link>
                 </div>
             </DisclosurePanel>
         </Disclosure>

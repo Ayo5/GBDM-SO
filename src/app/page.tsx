@@ -1,49 +1,46 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import Article from "@/components/article";
 
-const sections = [
-    {
-        image: "/background.jpg",
-        imageAlt: "Image 1",
-        title: "Article 1",
-        width: 400,
-        height: 200,
-        content: "Lorem ipsum dolor sit amet, " +
-            "consectetur adipiscing elit, sed do eiusmod tempor incididunt" +
-            " ut labore et dolore magna aliqua. Ut enim ad minim veniam, " +
-            "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
-    },
-    {
-        image: "/background.jpg",
-        imageAlt: "Image 2",
-        title: "Article 2",
-        width: 400,
-        height: 600,
-        content: "Lorem ipsum dolor sit amet, " +
-            "consectetur adipiscing elit, sed do eiusmod tempor incididunt" +
-            " ut labore et dolore magna aliqua. Ut enim ad minim veniam, " +
-            "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
-    },
-    {
-        title: "Article 3",
-        content: "This is the content of the third article without an image."
-    }
-];
-
-
+interface Section {
+    _id: number;
+    title: string;
+    content: string;
+    image?: string;
+    imageAlt?: string;
+    width?: number;
+    height?: number;
+}
 
 export default function Home() {
+    const [sections, setSections] = useState<Section[]>([]);
+
+    useEffect(() => {
+        const fetchArticles = async () => {
+            try {
+                const response = await fetch('/api/articles');
+                const data = await response.json();
+                setSections(data);
+            } catch (error) {
+                console.error('Error fetching articles:', error);
+            }
+        };
+
+        fetchArticles();
+    }, []);
+
     return (
         <div className="homepage-background min-h-screen">
-            <Navbar/>
+            <Navbar />
             <main className="container mx-auto px-4 py-8">
-                <div className="bg-white/80 rounded-2xl shadow-lg ">
-                    <Article sections={sections}/>
+                <div className="bg-white/80 rounded-2xl shadow-lg">
+                    <Article sections={sections} />
                 </div>
             </main>
-            <Footer/>
+            <Footer />
         </div>
     );
 }
