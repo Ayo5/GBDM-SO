@@ -13,7 +13,7 @@ export default async function handler(req, res) {
         }
 
         try {
-            // Find the highest current _id and increment it by 1
+            // Find the highest current id and increment it by 1
             const lastArticle = await ArticleMongo.findOne().sort({ _id: -1 });
             const newId = lastArticle ? lastArticle._id + 1 : 1;
 
@@ -23,15 +23,19 @@ export default async function handler(req, res) {
         } catch (error) {
             res.status(400).json({ success: false, error: error.message });
         }
-    } else if (req.method === 'GET') {
+    }
+
+    else if (req.method === 'GET') {
         try {
             const articles = await ArticleMongo.find({});
             res.status(200).json(articles);
         } catch (error) {
             res.status(400).json({ success: false, error: error.message });
         }
-    } else {
-        res.setHeader('Allow', ['POST', 'GET']);
+    }
+
+    else {
+        res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 }
