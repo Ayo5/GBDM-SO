@@ -11,6 +11,8 @@ interface Article {
     imageAlt: string;
     width: number;
     height: number;
+    originalWidth?: number;
+    originalHeight?: number;
 }
 
 export default function ArticleManagement() {
@@ -21,7 +23,9 @@ export default function ArticleManagement() {
         image: "",
         imageAlt: "",
         width: 0,
-        height: 0
+        height: 0,
+        originalWidth: 0,
+        originalHeight: 0
     });
     const [editingArticle, setEditingArticle] = useState<Article | null>(null);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -60,21 +64,42 @@ export default function ArticleManagement() {
         // Obtenir les dimensions de l'image
         const img = new Image();
         img.onload = () => {
+            const dimensions = {
+                width: img.width,
+                height: img.height,
+                originalWidth: img.width,
+                originalHeight: img.height
+            };
+
             if (editingArticle) {
                 setEditingArticle({
                     ...editingArticle,
-                    width: img.width,
-                    height: img.height
+                    ...dimensions
                 });
             } else {
                 setNewArticle({
                     ...newArticle,
-                    width: img.width,
-                    height: img.height
+                    ...dimensions
                 });
             }
         };
         img.src = URL.createObjectURL(file);
+    };
+
+    const resetDimensions = (isEditing: boolean) => {
+        if (isEditing && editingArticle) {
+            setEditingArticle({
+                ...editingArticle,
+                width: editingArticle.originalWidth || 0,
+                height: editingArticle.originalHeight || 0
+            });
+        } else {
+            setNewArticle({
+                ...newArticle,
+                width: newArticle.originalWidth || 0,
+                height: newArticle.originalHeight || 0
+            });
+        }
     };
 
     const uploadImage = async (file: File): Promise<string> => {
@@ -138,7 +163,9 @@ export default function ArticleManagement() {
                     image: "",
                     imageAlt: "",
                     width: 0,
-                    height: 0
+                    height: 0,
+                    originalWidth: 0,
+                    originalHeight: 0
                 });
                 setSelectedFile(null);
                 setImagePreview("");
@@ -149,7 +176,11 @@ export default function ArticleManagement() {
     };
 
     const handleEditClick = (article: Article, index: number) => {
-        setEditingArticle(article);
+        setEditingArticle({
+            ...article,
+            originalWidth: article.width,
+            originalHeight: article.height
+        });
         setEditingIndex(index);
         setImagePreview(article.image);
     };
@@ -237,12 +268,53 @@ export default function ArticleManagement() {
                 className="border p-2 w-full rounded text-black"
             />
 
+            <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label className="text-black block mb-2">Largeur (pixels)</label>
+                    <input
+                        type="number"
+                        min="0"
+                        placeholder="Largeur automatique"
+                        value={article.width || ''}
+                        onChange={(e) => handleInputChange('width', parseInt(e.target.value) || 0)}
+                        className="border p-2 w-full rounded text-black"
+                    />
+                </div>
+                <div>
+                    <label className="text-black block mb-2">Hauteur (pixels)</label>
+                    <input
+                        type="number"
+                        min="0"
+                        placeholder="Hauteur automatique"
+                        value={article.height || ''}
+                        onChange={(e) => handleInputChange('height', parseInt(e.target.value) || 0)}
+                        className="border p-2 w-full rounded text-black"
+                    />
+                </div>
+            </div>
+
+            {article.originalWidth && article.originalHeight && (
+                <button
+                    type="button"
+                    onClick={() => resetDimensions(isEditing)}
+                    className="text-blue-500 text-sm hover:text-blue-700"
+                >
+                    Réinitialiser aux dimensions originales ({article.originalWidth}x{article.originalHeight})
+                </button>
+            )}
+
             {(imagePreview || article.image) && (
                 <div className="mt-2">
                     <img
                         src={imagePreview || article.image}
                         alt="Aperçu"
-                        className="max-w-xs rounded"
+                        className="rounded"
+                        style={{
+                            maxWidth: '100%',
+                            width: article.width ? `${article.width}px` : 'auto',
+                            height: article.height ? `${article.height}px` : 'auto',
+                            objectFit: 'contain'
+                        }}
                     />
                 </div>
             )}
@@ -319,8 +391,12 @@ export default function ArticleManagement() {
                                     src={article.image}
                                     alt={article.imageAlt}
                                     className="mt-2 rounded"
-                                    width={article.width}
-                                    height={article.height}
+                                    style={{
+                                        maxWidth: '100%',
+                                        width: article.width ? `${article.width}px` : 'auto',
+                                        height: article.height ? `${article.height}px` : 'auto',
+                                        objectFit: 'contain'
+                                    }}
                                 />
                             )}
                         </div>
