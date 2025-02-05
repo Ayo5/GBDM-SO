@@ -15,9 +15,11 @@ const SLIDES = [
 ];
 
 const SLIDES1 = [
-    { src: "/uploads/webp/image0.webp", alt: "Example Image 1", width: 100, height: 100 },
     { src: "/uploads/webp/image1.webp", alt: "Example Image 2", width: 100, height: 100 },
-    { src: "/uploads/webp/_DSC2006.webp", alt: "Example Image 5", width: 100, height: 100 }
+    { src: "/uploads/webp/_DSC2006.webp", alt: "Example Image 3", width: 100, height: 100 },
+    { src: "/uploads/webp/_DSC2021.webp", alt: "Example Image 4", width: 100, height: 100 },
+    { src: "/uploads/webp/_DSC2033.webp", alt: "Example Image 5", width: 100, height: 100 },
+    { src: "/uploads/webp/_DSC2031.webp", alt: "Example Image 6", width: 100, height: 100 }
 ];
 
 

@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import formidable from 'formidable';
 import path from 'path';
 import fs from 'fs/promises';
+import sharp from 'sharp';
 
 export const config = {
     api: {
@@ -19,12 +20,13 @@ const parseForm = (
     req: NextApiRequest
 ): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
     return new Promise((resolve, reject) => {
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+        // Utilisation d'un dossier temporaire pour le upload initial
+        const tempDir = path.join(process.cwd(), 'tmp');
 
         const form = formidable({
-            uploadDir,
+            uploadDir: tempDir,
             keepExtensions: true,
-            filename: (_name, ext) => `image-${Date.now()}${ext}`,
+            filename: (_name, ext) => `temp-${Date.now()}${ext}`,
         });
 
         form.parse(req, (err, fields, files) => {
@@ -34,11 +36,16 @@ const parseForm = (
     });
 };
 
+const convertToWebP = async (inputPath: string, outputPath: string): Promise<void> => {
+    await sharp(inputPath)
+        .webp({ quality: 80 }) // Vous pouvez ajuster la qualité selon vos besoins
+        .toFile(outputPath);
+};
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<ResponseData>
 ) {
-    // Vérifier la méthode HTTP
     if (req.method !== 'POST') {
         return res.status(405).json({
             success: false,
@@ -47,17 +54,20 @@ export default async function handler(
     }
 
     try {
-        // S'assurer que le dossier d'upload existe
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-        try {
-            await fs.access(uploadDir);
-        } catch {
-            await fs.mkdir(uploadDir, { recursive: true });
+        // Créer les dossiers nécessaires
+        const tempDir = path.join(process.cwd(), 'tmp');
+        const webpDir = path.join(process.cwd(), 'public', 'uploads', 'webp');
+
+        for (const dir of [tempDir, webpDir]) {
+            try {
+                await fs.access(dir);
+            } catch {
+                await fs.mkdir(dir, { recursive: true });
+            }
         }
 
         // Parser le formulaire
         const { files } = await parseForm(req);
-        console.log('Parsed files:', files);
         const uploadedFile = Array.isArray(files.image) ? files.image[0] : files.image;
 
         if (!uploadedFile) {
@@ -68,17 +78,26 @@ export default async function handler(
         }
 
         // Vérifier le type de fichier
-        const validTypes = ['image/jpeg', 'image/png'];
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (!validTypes.includes(uploadedFile.mimetype || '')) {
             return res.status(400).json({
                 success: false,
-                error: 'Type de fichier non valide. Seuls JPG et PNG sont acceptés'
+                error: 'Type de fichier non valide. Seuls JPG, PNG et WebP sont acceptés'
             });
         }
 
+        // Générer le nom du fichier WebP
+        const webpFilename = `image-${Date.now()}.webp`;
+        const webpPath = path.join(webpDir, webpFilename);
+
+        // Convertir l'image en WebP
+        await convertToWebP(uploadedFile.filepath, webpPath);
+
+        // Supprimer le fichier temporaire
+        await fs.unlink(uploadedFile.filepath);
+
         // Construire l'URL de l'image
-        const filename = path.basename(uploadedFile.filepath);
-        const imageUrl = `/uploads/${filename}`;
+        const imageUrl = `/uploads/webp/${webpFilename}`;
 
         // Retourner la réponse
         return res.status(201).json({
