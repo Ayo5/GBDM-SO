@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Kaisei+Opti:wght@400;700&display=swap');  /* à télécharger pour optimiser le site */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -40,5 +40,5 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Kaisei Opti', Arial, Helvetica, sans-serif;
+  font-family: 'Playfair Display', serif;
 }
