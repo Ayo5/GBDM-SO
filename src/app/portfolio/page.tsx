@@ -78,7 +78,7 @@ export default function Portfolio() {
             <main className="flex-1 w-full py-16">
                 <div className="max-w-[2000px] mx-auto">
                     {carousels.map((carousel, index) => (
-                        <React.Fragment key={carousel._id}>
+                        <React.Fragment key={carousel._id || index}>
                             {index === 1 && <ParallaxSection />}
                             <h1 className="text-2xl font-bold text-left my-16 ml-12">
                                 Carousel {index + 1}
