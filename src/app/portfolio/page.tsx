@@ -27,7 +27,7 @@ export default function Portfolio() {
     useEffect(() => {
         const fetchCarousels = async () => {
             try {
-                const response = await fetch('/api/carousel');
+                const response = await fetch('/api/carousels');
                 if (!response.ok) {
                     throw new Error('Erreur lors du chargement des carousels');
                 }

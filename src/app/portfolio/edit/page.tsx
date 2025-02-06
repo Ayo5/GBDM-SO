@@ -34,7 +34,7 @@ export default function CarouselManagement() {
 
     const fetchCarousels = async () => {
         try {
-            const response = await fetch('/api/carousel');
+            const response = await fetch('/api/carousels');
             if (!response.ok) throw new Error('Erreur lors du chargement des carousels');
             const data = await response.json();
             setCarousels(data);
@@ -70,7 +70,7 @@ export default function CarouselManagement() {
 
     const handleAddCarousel = async () => {
         try {
-            const response = await fetch('/api/carousel', {
+            const response = await fetch('/api/carousels', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newCarousel)
@@ -93,7 +93,7 @@ export default function CarouselManagement() {
         if (!editingCarousel) return;
 
         try {
-            const response = await fetch('/api/carousel', {
+            const response = await fetch('/api/carousels', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(editingCarousel)
@@ -110,7 +110,7 @@ export default function CarouselManagement() {
 
     const handleDeleteCarousel = async (id: string) => {
         try {
-            const response = await fetch('/api/carousel', {
+            const response = await fetch('/api/carousels', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })

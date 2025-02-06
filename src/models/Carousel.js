@@ -44,6 +44,6 @@ const carouselSchema = new mongoose.Schema({
 
 
 // Vérifiez si le modèle existe déjà avant de le créer
-const CarouselModel = mongoose.models.carousel || mongoose.model('carousel', carouselSchema);
+const CarouselModel = mongoose.models.carousels || mongoose.model('carousels', carouselSchema);
 
 export default CarouselModel;
