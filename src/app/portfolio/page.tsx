@@ -1,51 +1,93 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import InfiniteCarousel from "@/components/carousel";
 import { ParallaxSection } from "@/components/parallax";
 
-const SLIDES = [
-    { src: "/uploads/webp/DSC02573.webp", alt: "Example Image 1", width: 100, height: 100 },
-    { src: "/uploads/webp/DSC02577.webp", alt: "Example Image 2", width: 100, height: 100 },
-    { src: "/uploads/webp/DSC02578.webp", alt: "Example Image 3", width: 100, height: 100 },
-    { src: "/uploads/webp/DSC02580.webp", alt: "Example Image 4", width: 100, height: 100 },
-    { src: "/uploads/webp/DSC02583.webp", alt: "Example Image 5", width: 100, height: 100 }
-];
-
-const SLIDES1 = [
-    { src: "/uploads/webp/image1.webp", alt: "Example Image 2", width: 100, height: 100 },
-    { src: "/uploads/webp/_DSC2006.webp", alt: "Example Image 3", width: 100, height: 100 },
-    { src: "/uploads/webp/_DSC2021.webp", alt: "Example Image 4", width: 100, height: 100 },
-    { src: "/uploads/webp/_DSC2033.webp", alt: "Example Image 5", width: 100, height: 100 },
-    { src: "/uploads/webp/_DSC2031.webp", alt: "Example Image 6", width: 100, height: 100 }
-];
-
+// Type pour un carousel
+interface Carousel {
+    _id: string;
+    slides: Array<{
+        src: string;
+        alt: string;
+        width: number;
+        height: number;
+    }>;
+    order: number;
+    isActive: boolean;
+}
 
 export default function Portfolio() {
+    const [carousels, setCarousels] = useState<Carousel[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchCarousels = async () => {
+            try {
+                const response = await fetch('/api/carousel');
+                if (!response.ok) {
+                    throw new Error('Erreur lors du chargement des carousels');
+                }
+                const data = await response.json();
+                // Trie les carousels par leur ordre
+                const sortedCarousels = data.sort((a: Carousel, b: Carousel) => a.order - b.order);
+                setCarousels(sortedCarousels);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCarousels();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex flex-col">
+                <Navbar />
+                <main className="flex-1 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900" />
+                </main>
+                <Footer />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex flex-col">
+                <Navbar />
+                <main className="flex-1 flex items-center justify-center">
+                    <div className="text-red-500 text-center">
+                        <h2 className="text-xl font-bold">Erreur</h2>
+                        <p>{error}</p>
+                    </div>
+                </main>
+                <Footer />
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
-            <main className="flex-1 w-fullpy-16">
+            <main className="flex-1 w-full py-16">
                 <div className="max-w-[2000px] mx-auto">
-
-                    <h1 className="text-2xl font-bold text-left my-16 ml-12">
-                        Anniversaire
-                    </h1>
-                    <div className="mx-auto px-8 py-10 mb-32">
-                        <InfiniteCarousel images={SLIDES} />
-                    </div>
-
-                    <ParallaxSection />
-
-                    <h1 className="text-2xl font-bold text-left my-16 ml-12">
-                        Thème 2
-                    </h1>
-                    <div className="mx-auto px-8 py-10 rounded-2xl">
-                        <InfiniteCarousel images={SLIDES1} />
-                    </div>
-
+                    {carousels.map((carousel, index) => (
+                        <React.Fragment key={carousel._id}>
+                            {index === 1 && <ParallaxSection />}
+                            <h1 className="text-2xl font-bold text-left my-16 ml-12">
+                                Carousel {index + 1}
+                            </h1>
+                            <div className={`mx-auto px-8 py-10 ${index === 0 ? 'mb-32' : 'rounded-2xl'}`}>
+                                <InfiniteCarousel images={carousel.slides} />
+                            </div>
+                        </React.Fragment>
+                    ))}
                 </div>
             </main>
             <Footer />

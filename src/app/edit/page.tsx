@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Pencil, Trash2 } from "lucide-react";
+import Navbar from "@/components/navbar";
 
 interface Article {
     _id?: string;
@@ -354,6 +355,7 @@ export default function ArticleManagement() {
 
     return (
         <div className="container mx-auto p-4">
+            <Navbar/>
             <h1 className="text-2xl font-bold mb-4">Gestion des Articles</h1>
 
             <div className="mb-8 bg-white p-6 rounded-lg shadow">
