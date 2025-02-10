@@ -14,6 +14,7 @@ interface ArticleProps {
     sections?: Section[];
 }
 
+
 const Article: React.FC<ArticleProps> = ({ sections = [] }) => {
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
@@ -25,9 +26,9 @@ const Article: React.FC<ArticleProps> = ({ sections = [] }) => {
                         key={section._id}
                         className={`
                             flex flex-col gap-8 my-20
-                            ${section.image ? 'md:flex-row md:items-center md:gap-12' : 'items-center'}
-                            ${index % 2 === 1 && section.image ? 'md:flex-row-reverse' : ''}
-                            ${index % 2 === 1 ? 'md:ml-32' : ''}
+                            ${section.image ? 'md:flex-row md:items-center' : 'items-center'}
+                            ${index % 2 === 1 && section.image ? 'md:flex-row-reverse md:gap-24' : 'md:gap-12'}
+                            ${index % 2 === 1 ? 'md:ml-22 md:mr-6' : ''}
                         `}
                     >
                         {section.image && (
@@ -67,4 +68,4 @@ const Article: React.FC<ArticleProps> = ({ sections = [] }) => {
     );
 };
 
-export default Article;
+export default Article;;
