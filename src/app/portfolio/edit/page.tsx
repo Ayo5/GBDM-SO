@@ -18,6 +18,7 @@ interface Carousel {
 
 export default function CarouselManagement() {
     const [carousels, setCarousels] = useState<Carousel[]>([]);
+    const [availableImages, setAvailableImages] = useState<string[]>([]);
     const [newCarousel, setNewCarousel] = useState<Omit<Carousel, '_id'>>({
         slides: Array(10).fill({ src: '', alt: '', width: 100, height: 100 }),
         isActive: true,
@@ -27,10 +28,21 @@ export default function CarouselManagement() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Charger les carousels existants
+    // Charger les carousels existants et les images disponibles
     useEffect(() => {
-        fetchCarousels();
+        Promise.all([fetchCarousels(), fetchAvailableImages()]);
     }, []);
+
+    const fetchAvailableImages = async () => {
+        try {
+            const response = await fetch('/api/images');
+            if (!response.ok) throw new Error('Erreur lors du chargement des images');
+            const data = await response.json();
+            setAvailableImages(data.images);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Erreur lors du chargement des images');
+        }
+    };
 
     const fetchCarousels = async () => {
         try {
@@ -45,27 +57,23 @@ export default function CarouselManagement() {
         }
     };
 
-    const handleSlideChange = (index: number, file: File, target: 'new' | 'edit') => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const newSlide = {
-                src: e.target?.result as string,
-                alt: `Image ${index + 1}`,
-                width: 100,
-                height: 100
-            };
-
-            if (target === 'new') {
-                const newSlides = [...newCarousel.slides];
-                newSlides[index] = newSlide;
-                setNewCarousel({ ...newCarousel, slides: newSlides });
-            } else if (editingCarousel) {
-                const editSlides = [...editingCarousel.slides];
-                editSlides[index] = newSlide;
-                setEditingCarousel({ ...editingCarousel, slides: editSlides });
-            }
+    const handleSlideChange = (index: number, imageName: string, target: 'new' | 'edit') => {
+        const newSlide = {
+            src: `/uploads/webp/${imageName}`,
+            alt: imageName.replace('.webp', ''),
+            width: 100,
+            height: 100
         };
-        reader.readAsDataURL(file);
+
+        if (target === 'new') {
+            const newSlides = [...newCarousel.slides];
+            newSlides[index] = newSlide;
+            setNewCarousel({ ...newCarousel, slides: newSlides });
+        } else if (editingCarousel) {
+            const editSlides = [...editingCarousel.slides];
+            editSlides[index] = newSlide;
+            setEditingCarousel({ ...editingCarousel, slides: editSlides });
+        }
     };
 
     const handleAddCarousel = async () => {
@@ -80,7 +88,7 @@ export default function CarouselManagement() {
 
             await fetchCarousels();
             setNewCarousel({
-                slides: Array(5).fill({ src: '', alt: '', width: 100, height: 100 }),
+                slides: Array(10).fill({ src: '', alt: '', width: 100, height: 100 }),
                 isActive: true,
                 order: 0
             });
@@ -143,17 +151,22 @@ export default function CarouselManagement() {
             <div className="mb-8 bg-gray-50 p-4 rounded-lg">
                 <h2 className="text-xl font-semibold mb-4">Ajouter un nouveau carousel</h2>
                 <div className="grid grid-cols-5 gap-4 mb-4">
-                    {newCarousel.slides.map((_, index) => (
+                    {newCarousel.slides.map((slide, index) => (
                         <div key={index} className="space-y-2">
-                            <input
-                                type="file"
-                                onChange={(e) => e.target.files && handleSlideChange(index, e.target.files[0], 'new')}
-                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                            />
+                            <select
+                                onChange={(e) => handleSlideChange(index, e.target.value, 'new')}
+                                value={slide.src.split('/').pop() || ''}
+                                className="w-full p-2 border rounded"
+                            >
+                                <option value="">Sélectionner une image</option>
+                                {availableImages.map((img) => (
+                                    <option key={img} value={img}>{img}</option>
+                                ))}
+                            </select>
                             <input
                                 type="text"
                                 placeholder={`Alt texte ${index + 1}`}
-                                value={newCarousel.slides[index].alt}
+                                value={slide.alt}
                                 onChange={(e) => {
                                     const newSlides = [...newCarousel.slides];
                                     newSlides[index] = { ...newSlides[index], alt: e.target.value };
@@ -161,6 +174,13 @@ export default function CarouselManagement() {
                                 }}
                                 className="w-full p-2 border rounded"
                             />
+                            {slide.src && (
+                                <img
+                                    src={slide.src}
+                                    alt={slide.alt}
+                                    className="w-full h-32 object-cover rounded"
+                                />
+                            )}
                         </div>
                     ))}
                 </div>
@@ -172,10 +192,11 @@ export default function CarouselManagement() {
                 </button>
             </div>
 
-            <div className="space-y-6">
-                <h2 className="text-xl font-semibold">Carousels existants</h2>
+            <div className="mb-8">
+                <h2 className="text-xl font-semibold mb-4">Carousels existants</h2>
                 {carousels.map((carousel) => (
-                    <div key={carousel._id} className="border p-4 rounded-lg bg-white">
+                    <div key={carousel._id} className="mb-4 bg-white p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-bold mb-2">Carousel {carousel.order}</h3>
                         <div className="grid grid-cols-5 gap-4 mb-4">
                             {carousel.slides.map((slide, index) => (
                                 <div key={index} className="space-y-2">
@@ -184,7 +205,7 @@ export default function CarouselManagement() {
                                         alt={slide.alt}
                                         className="w-full h-32 object-cover rounded"
                                     />
-                                    <p className="text-sm text-gray-600 truncate">{slide.alt}</p>
+                                    <p>{slide.alt}</p>
                                 </div>
                             ))}
                         </div>
@@ -213,11 +234,16 @@ export default function CarouselManagement() {
                         <div className="grid grid-cols-5 gap-4 mb-4">
                             {editingCarousel.slides.map((slide, index) => (
                                 <div key={index} className="space-y-2">
-                                    <input
-                                        type="file"
-                                        onChange={(e) => e.target.files && handleSlideChange(index, e.target.files[0], 'edit')}
-                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                    />
+                                    <select
+                                        onChange={(e) => handleSlideChange(index, e.target.value, 'edit')}
+                                        value={slide.src.split('/').pop() || ''}
+                                        className="w-full p-2 border rounded"
+                                    >
+                                        <option value="">Sélectionner une image</option>
+                                        {availableImages.map((img) => (
+                                            <option key={img} value={img}>{img}</option>
+                                        ))}
+                                    </select>
                                     <input
                                         type="text"
                                         value={slide.alt}
@@ -228,11 +254,13 @@ export default function CarouselManagement() {
                                         }}
                                         className="w-full p-2 border rounded"
                                     />
-                                    <img
-                                        src={slide.src}
-                                        alt={slide.alt}
-                                        className="w-full h-32 object-cover rounded"
-                                    />
+                                    {slide.src && (
+                                        <img
+                                            src={slide.src}
+                                            alt={slide.alt}
+                                            className="w-full h-32 object-cover rounded"
+                                        />
+                                    )}
                                 </div>
                             ))}
                         </div>

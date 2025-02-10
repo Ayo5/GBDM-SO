@@ -9,6 +9,7 @@ import { ParallaxSection } from "@/components/parallax";
 // Type pour un carousel
 interface Carousel {
     _id: string;
+    title: string;
     slides: Array<{
         src: string;
         alt: string;
@@ -81,7 +82,7 @@ export default function Portfolio() {
                         <React.Fragment key={carousel._id || index}>
                             {index === 1 && <ParallaxSection />}
                             <h1 className="text-2xl font-bold text-left my-16 ml-12">
-                                Carousel {index + 1}
+                                {carousel.title}
                             </h1>
                             <div className={`mx-auto px-8 py-10 ${index === 0 ? 'mb-32' : 'rounded-2xl'}`}>
                                 <InfiniteCarousel images={carousel.slides} />

@@ -23,6 +23,7 @@ const slideSchema = new mongoose.Schema({
 // Schéma principal du carousel
 const carouselSchema = new mongoose.Schema({
     slides: {
+        title: String,
         type: [slideSchema],
         required: true,
         validate: [
