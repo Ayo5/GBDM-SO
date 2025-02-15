@@ -6,7 +6,6 @@ import Footer from "@/components/footer";
 import InfiniteCarousel from "@/components/carousel";
 import { ParallaxSection } from "@/components/parallax";
 
-// Type pour un carousel
 interface Carousel {
     _id: string;
     title: string;
@@ -121,6 +120,56 @@ const staticCarousels: Carousel[] = [
         ],
         order: 1,
         isActive: true
+    },
+    {
+        _id: "3",
+        title: "Troisième Carousel Example",
+        slides: [
+            {
+                src: "/uploads/webp/DSC09904.webp",
+                alt: "Example Image 1",
+                width: 100,
+                height: 100,
+            },
+            {
+                src: "/uploads/webp/DSC09905.webp",
+                alt: "Example Image 2",
+                width: 100,
+                height: 100,
+            },
+            {
+                src: "/uploads/webp/DSC09906.webp",
+                alt: "Example Image 3",
+                width: 100,
+                height: 100,
+            },
+            {
+                src: "/uploads/webp/DSC09907.webp",
+                alt: "Example Image 4",
+                width: 100,
+                height: 100,
+            },
+            {
+                src: "/uploads/webp/DSC09911.webp",
+                alt: "Example Image 5",
+                width: 100,
+                height: 100,
+            },
+            {
+                src: "/uploads/webp/DSC09912.webp",
+                alt: "Example Image 5",
+                width: 100,
+                height: 100,
+            },
+            {
+                src: "/uploads/webp/DSC09913.webp",
+                alt: "Example Image 5",
+                width: 100,
+                height: 100,
+            },
+        ],
+        order: 1,
+        isActive: true
     }
 ];
 
@@ -135,6 +184,7 @@ export default function Portfolio() {
                     {carousels.map((carousel, index) => (
                         <React.Fragment key={carousel._id}>
                             {index === 1 && <ParallaxSection image="DSC02580"/>}
+                            {index === 2 && <ParallaxSection image="DSC02580"/>}
                             <h1 className="text-2xl font-bold text-left my-16 ml-12">
                                 {carousel.title}
                             </h1>

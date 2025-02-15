@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import Image from "next/image";
+import { useSwipeable } from "react-swipeable";
 
 interface Slide {
     src: string;
@@ -41,9 +42,16 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images, isMobile = false })
         return ((index % length) + length) % length;
     };
 
+    const handlers = useSwipeable({
+        onSwipedLeft: next,
+        onSwipedRight: prev,
+        preventDefaultTouchmoveEvent: true,
+        trackMouse: true,
+    });
+
     if (isMobile) {
         return (
-            <div className="w-full">
+            <div className="w-full" {...handlers}>
                 <div className="relative h-[300px] md:h-[400px] overflow-hidden">
                     <Image
                         src={images[currentIndex].src}
@@ -55,18 +63,6 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images, isMobile = false })
                         priority
                         onClick={() => setIsFullscreen(true)}
                     />
-                    <button
-                        onClick={prev}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 rounded-full p-1.5 z-30"
-                    >
-                        <ChevronLeft className="w-5 h-5 text-white" />
-                    </button>
-                    <button
-                        onClick={next}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 rounded-full p-1.5 z-30"
-                    >
-                        <ChevronRight className="w-5 h-5 text-white" />
-                    </button>
                 </div>
             </div>
         );
@@ -78,6 +74,7 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images, isMobile = false })
                 className="relative h-[400px] md:h-[500px] lg:h-[600px] overflow-visible"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
+                {...handlers}
             >
                 <div className="flex justify-center items-center h-full">
                     {[-1, 0, 1].map((offset) => {

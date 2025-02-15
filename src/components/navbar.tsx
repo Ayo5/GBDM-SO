@@ -38,7 +38,9 @@ export default function Navbar() {
                             {/* Logo et Menu Desktop */}
                             <div className="flex flex-1 items-center justify-between">
                                 <div className="flex shrink-0 items-center">
-                                    <img alt="GBDM" src="/img.png" className="h-8 w-auto" />
+                                    <Link href="/">
+                                        <img alt="GBDM" src="/img.png" className="h-8 w-auto" />
+                                    </Link>
                                 </div>
                                 <div className="hidden sm:block">
                                     <div className="flex space-x-6">
