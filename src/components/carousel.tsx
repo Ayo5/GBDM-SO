@@ -37,21 +37,16 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images, isMobile = false })
         }
     }, [isHovered, isFullscreen]);
 
-    const getSlideIndex = (index: number) => {
-        const length = images.length;
-        return ((index % length) + length) % length;
-    };
-
     const handlers = useSwipeable({
         onSwipedLeft: next,
         onSwipedRight: prev,
-        preventDefaultTouchmoveEvent: true,
+        preventScrollOnSwipe: true,
         trackMouse: true,
     });
 
     if (isMobile) {
         return (
-            <div className="w-full" {...handlers}>
+            <div {...handlers} className="w-full">
                 <div className="relative h-[300px] md:h-[400px] overflow-hidden">
                     <Image
                         src={images[currentIndex].src}
@@ -69,62 +64,41 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images, isMobile = false })
     }
 
     return (
-        <div className="w-full">
+        <div className="w-full" {...handlers}>
             <div
                 className="relative h-[400px] md:h-[500px] lg:h-[600px] overflow-visible"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                {...handlers}
             >
                 <div className="flex justify-center items-center h-full">
-                    {[-1, 0, 1].map((offset) => {
-                        const index = getSlideIndex(currentIndex + offset);
-                        const isCenter = offset === 0;
-
-                        return (
-                            <div
-                                key={index}
-                                className={`absolute transition-all duration-700 ease-in-out
-                                    ${isCenter ? "w-[600px] md:w-[700px] lg:w-[900px] z-20" : "w-[500px] md:w-[600px] lg:w-[700px] z-10"}
-                                    ${offset === -1 ? "-translate-x-[70%] md:-translate-x-[85%]" : ""}
-                                    ${offset === 1 ? "translate-x-[70%] md:translate-x-[85%]" : ""}
-                                `}
-                            >
-                                <div
-                                    className={`relative h-[400px] md:h-[500px] lg:h-[600px] rounded-xl overflow-hidden transition-all duration-700 ease-in-out
-                                        ${isCenter ? "scale-100 opacity-100 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] cursor-pointer" : "scale-90 opacity-50"}`}
-                                    onClick={() => isCenter && setIsFullscreen(true)}
-                                >
-                                    <Image
-                                        src={images[index].src}
-                                        alt={images[index].alt}
-                                        fill
-                                        quality={100}
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
-                                        className={`object-cover transition-all duration-700 ease-in-out
-                                            ${isCenter ? "hover:scale-110 hover:brightness-110" : "grayscale brightness-75"}`}
-                                        priority={isCenter}
-                                    />
-                                </div>
-                            </div>
-                        );
-                    })}
+                    <Image
+                        src={images[currentIndex].src}
+                        alt={images[currentIndex].alt}
+                        fill
+                        quality={100}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
+                        className="object-cover transition-all duration-700 ease-in-out hover:scale-110 hover:brightness-110"
+                        priority
+                        onClick={() => setIsFullscreen(true)}
+                    />
                 </div>
-
-                <button
-                    onClick={prev}
-                    className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 bg-black hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 z-30"
-                >
-                    <ChevronLeft className="w-5 md:w-6 h-5 md:h-6" />
-                </button>
-                <button
-                    onClick={next}
-                    className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 bg-black hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 z-30"
-                >
-                    <ChevronRight className="w-5 md:w-6 h-5 md:h-6" />
-                </button>
+                {!isMobile && (
+                    <>
+                        <button
+                            onClick={prev}
+                            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 bg-black hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 z-30"
+                        >
+                            <ChevronLeft className="w-5 md:w-6 h-5 md:h-6" />
+                        </button>
+                        <button
+                            onClick={next}
+                            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 bg-black hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 z-30"
+                        >
+                            <ChevronRight className="w-5 md:w-6 h-5 md:h-6" />
+                        </button>
+                    </>
+                )}
             </div>
-
             {isFullscreen && (
                 <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
                     <button
