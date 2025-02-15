@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import Image from 'next/image';
 
 interface Slide {
@@ -16,6 +16,7 @@ interface CarouselProps {
 const InfiniteCarousel: React.FC<CarouselProps> = ({ images }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
 
     const next = () => {
         setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
@@ -26,11 +27,11 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images }) => {
     };
 
     useEffect(() => {
-        if (!isHovered) {
+        if (!isHovered && !isFullscreen) {
             const interval = setInterval(next, 3000);
             return () => clearInterval(interval);
         }
-    }, [isHovered]);
+    }, [isHovered, isFullscreen]);
 
     const getSlideIndex = (index: number) => {
         const length = images.length;
@@ -40,7 +41,7 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images }) => {
     return (
         <div className="w-full">
             <div
-                className="relative h-[600px] overflow-hidden"
+                className="relative h-[600px] overflow-visible"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
@@ -53,13 +54,15 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images }) => {
                             <div
                                 key={index}
                                 className={`absolute transition-all duration-700 ease-in-out
-                                    ${isCenter ? 'w-[800px] z-20' : 'w-[700px] z-10'}
+                                    ${isCenter ? 'w-[900px] z-20' : 'w-[700px] z-10'}
                                     ${offset === -1 ? '-translate-x-[85%]' : ''}
                                     ${offset === 1 ? 'translate-x-[85%]' : ''}
                                 `}
                             >
-                                <div className={`relative h-[600px] rounded-xl overflow-hidden transition-transform duration-700 ease-in-out
-                                    ${isCenter ? 'scale-100 opacity-100' : 'scale-90 opacity-50'}`}
+                                <div
+                                    className={`relative h-[600px] rounded-xl overflow-hidden transition-all duration-700 ease-in-out
+                                        ${isCenter ? 'scale-100 opacity-100 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] cursor-pointer' : 'scale-90 opacity-50'}`}
+                                    onClick={() => isCenter && setIsFullscreen(true)}
                                 >
                                     <Image
                                         src={images[index].src}
@@ -67,8 +70,8 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images }) => {
                                         fill
                                         quality={100}
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 800px"
-                                        className={`object-cover transition-transform duration-700 ease-in-out
-                                            ${isCenter ? 'hover:scale-105' : 'grayscale brightness-75'}`}
+                                        className={`object-cover transition-all duration-700 ease-in-out
+                                            ${isCenter ? 'hover:scale-110 hover:brightness-110' : 'grayscale brightness-75'}`}
                                         priority={isCenter}
                                     />
                                 </div>
@@ -80,17 +83,40 @@ const InfiniteCarousel: React.FC<CarouselProps> = ({ images }) => {
                 {/* Navigation buttons */}
                 <button
                     onClick={prev}
-                    className="absolute left-8 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 z-30"
+                    className="absolute left-8 top-1/2 -translate-y-1/2 bg-black hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 z-30"
                 >
                     <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button
                     onClick={next}
-                    className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 z-30"
+                    className="absolute right-8 top-1/2 -translate-y-1/2 bg-black hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 z-30"
                 >
                     <ChevronRight className="w-6 h-6" />
                 </button>
             </div>
+
+            {/* Fullscreen Image View */}
+            {isFullscreen && (
+                <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+                    <button
+                        onClick={() => setIsFullscreen(false)}
+                        className="absolute top-8 right-8 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-all duration-200"
+                    >
+                        <X className="w-8 h-8 text-white" />
+                    </button>
+                    <div className="relative w-full max-w-7xl h-screen max-h-[90vh] mx-8">
+                        <Image
+                            src={images[currentIndex].src}
+                            alt={images[currentIndex].alt}
+                            fill
+                            quality={100}
+                            className="object-contain"
+                            sizes="(max-width: 1280px) 100vw, 1280px"
+                            priority
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
